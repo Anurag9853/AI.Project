@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,7 +36,22 @@ const popularIndianDestinations = [
   "Rishikesh",
   "Udaipur",
   "Shimla",
-  "Darjeeling"
+  "Darjeeling",
+  "Kochi",
+  "Pune",
+  "Ahmedabad",
+  "Mysore",
+  "Chandigarh",
+  "Lucknow",
+  "Bhopal",
+  "Srinagar",
+  "Thiruvananthapuram",
+  "Madurai",
+  "Pushkar",
+  "Coimbatore",
+  "Leh",
+  "Gangtok",
+  "Ooty"
 ];
 
 const TravelForm = ({ onSubmit, isLoading }: TravelFormProps) => {
@@ -137,9 +151,9 @@ const TravelForm = ({ onSubmit, isLoading }: TravelFormProps) => {
                 <SelectValue placeholder="Select budget range" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="cheap">Cheap - Stay conscious of costs</SelectItem>
-                <SelectItem value="moderate">Moderate - Keep cost on the average side</SelectItem>
-                <SelectItem value="luxury">Luxury - Don't worry about cost</SelectItem>
+                <SelectItem value="cheap">Budget - Under ₹2,000/day</SelectItem>
+                <SelectItem value="moderate">Standard - ₹2,000-₹5,000/day</SelectItem>
+                <SelectItem value="luxury">Premium - Above ₹5,000/day</SelectItem>
               </SelectContent>
             </Select>
           </div>

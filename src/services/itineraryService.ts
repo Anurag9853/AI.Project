@@ -1,3 +1,4 @@
+
 interface ItineraryParams {
   destination: string;
   days: number;
@@ -39,7 +40,7 @@ interface ItineraryData {
   weather?: Weather;
 }
 
-// Mock data to use when API is unavailable
+// Mock data for Indian destinations
 const mockItineraryData = (params: ItineraryParams): ItineraryData => {
   // Extract just the city name without ", India" for better readability
   const cityName = params.destination.replace(/, India$/i, '');
@@ -50,7 +51,7 @@ const mockItineraryData = (params: ItineraryParams): ItineraryData => {
       `Visit public parks and gardens in ${cityName}`,
       `Explore local markets in ${cityName}`,
       `Temple visits around ${cityName}`,
-      `Visit free museums or attractions in ${cityName}`
+      `Street food tasting in ${cityName}`
     ],
     moderate: [
       `Guided tour of ${cityName}'s main attractions`,
@@ -63,7 +64,7 @@ const mockItineraryData = (params: ItineraryParams): ItineraryData => {
       `Private guided tour of ${cityName}`,
       `Fine dining experiences at top-rated restaurants in ${cityName}`,
       `Luxury spa treatments in ${cityName}`,
-      `Helicopter or private boat tours around ${cityName}`,
+      `Private tours of historical sites in ${cityName}`,
       `VIP access to exclusive attractions in ${cityName}`
     ]
   };
@@ -75,7 +76,7 @@ const mockItineraryData = (params: ItineraryParams): ItineraryData => {
   // Mock hostel data with Indian names
   const mockHostels: Hostel[] = [
     {
-      name: `${cityName} Backpackers Hostel`,
+      name: `${cityName} Heritage Stay`,
       rating: 4.2,
       price: params.budget === 'cheap' ? 800 : params.budget === 'moderate' ? 1500 : 3000,
       currency: 'INR',
@@ -83,7 +84,7 @@ const mockItineraryData = (params: ItineraryParams): ItineraryData => {
       isMock: true
     },
     {
-      name: `${cityName} Heritage Stay`,
+      name: `${cityName} Palace Hotel`,
       rating: 4.5,
       price: params.budget === 'cheap' ? 1000 : params.budget === 'moderate' ? 2000 : 4000,
       currency: 'INR',
@@ -104,25 +105,25 @@ const mockItineraryData = (params: ItineraryParams): ItineraryData => {
   const mockAttractions: Attraction[] = [
     {
       name: `${cityName} Heritage Museum`,
-      description: `Learn about the rich history of ${cityName}`,
+      description: `Learn about the rich history of ${cityName} and its cultural significance in India`,
       rating: 4.6,
       isMock: true
     },
     {
       name: `${cityName} Temple Complex`,
-      description: `Experience the spiritual traditions in ${cityName}`,
+      description: `Experience the spiritual traditions in ${cityName}, one of India's most sacred sites`,
       rating: 4.8,
       isMock: true
     },
     {
       name: `${cityName} Cultural Center`,
-      description: `Experience the local culture and traditions of ${cityName}`,
+      description: `Experience the local culture and traditions of ${cityName}, showcasing India's diverse heritage`,
       rating: 4.4,
       isMock: true
     }
   ];
 
-  // Mock weather data
+  // Mock weather data (typical Indian weather)
   const mockWeather: Weather = {
     temperature: 28,
     condition: 'Sunny',
@@ -143,31 +144,32 @@ const mockItineraryData = (params: ItineraryParams): ItineraryData => {
   };
 };
 
-// Function to fetch weather data from Open-Meteo API (free, no API key required)
+// Function to fetch weather data from Indian Meteorological Department API-equivalent public data
 const fetchWeatherData = async (destination: string): Promise<Weather | null> => {
   try {
-    console.log("Fetching weather data for:", destination);
-    // First get coordinates for destination using Nominatim (OpenStreetMap's geocoding API - free, no key required)
+    console.log("Fetching weather data for Indian location:", destination);
+    
+    // First get coordinates for destination using Nominatim but restrict to India
     const geocodeResponse = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destination)}`, 
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destination)}&countrycodes=in`, 
       { headers: { "Accept-Language": "en" } }
     );
     
     if (!geocodeResponse.ok) {
-      console.error("Geocoding API request failed:", await geocodeResponse.text());
+      console.error("Geocoding API request failed for Indian location:", await geocodeResponse.text());
       throw new Error('Geocoding API request failed');
     }
     
     const geocodeData = await geocodeResponse.json();
-    console.log("Geocode data:", geocodeData);
+    console.log("Geocode data for Indian location:", geocodeData);
     
     if (!geocodeData || geocodeData.length === 0) {
-      console.error("Location not found for:", destination);
-      throw new Error('Location not found');
+      console.error("Location not found in India:", destination);
+      throw new Error('Location not found in India');
     }
     
     const { lat, lon } = geocodeData[0];
-    console.log("Coordinates:", lat, lon);
+    console.log("Coordinates for Indian location:", lat, lon);
     
     // Use Open-Meteo for weather (free, no API key)
     const weatherResponse = await fetch(
@@ -176,15 +178,15 @@ const fetchWeatherData = async (destination: string): Promise<Weather | null> =>
     );
     
     if (!weatherResponse.ok) {
-      console.error("Weather API request failed:", await weatherResponse.text());
+      console.error("Weather API request failed for Indian location:", await weatherResponse.text());
       throw new Error('Weather API request failed');
     }
     
     const weatherData = await weatherResponse.json();
-    console.log("Weather data:", weatherData);
+    console.log("Weather data for Indian location:", weatherData);
     
     if (!weatherData || !weatherData.current) {
-      console.error("Invalid weather data");
+      console.error("Invalid weather data for Indian location");
       throw new Error('Invalid weather data');
     }
     
@@ -224,7 +226,7 @@ const fetchWeatherData = async (destination: string): Promise<Weather | null> =>
     const weatherCode = weatherData.current.weather_code;
     const condition = weatherConditions[weatherCode] || 'Unknown';
     
-    // Generate appropriate icon URL based on condition
+    // Generate appropriate icon URL based on condition for Indian weather
     let iconUrl = 'https://cdn-icons-png.flaticon.com/512/6974/6974833.png'; // default
     
     if (weatherCode === 0) {
@@ -241,7 +243,7 @@ const fetchWeatherData = async (destination: string): Promise<Weather | null> =>
       iconUrl = 'https://cdn-icons-png.flaticon.com/512/1197/1197102.png'; // thunder
     }
     
-    console.log("Weather result:", {
+    console.log("Indian weather result:", {
       temperature: weatherData.current.temperature_2m,
       condition: condition,
       icon: iconUrl
@@ -254,43 +256,43 @@ const fetchWeatherData = async (destination: string): Promise<Weather | null> =>
       isMock: false
     };
   } catch (error) {
-    console.error('Error fetching weather data:', error);
+    console.error('Error fetching weather data for Indian location:', error);
     return null;
   }
 };
 
-// Function to fetch hostels data using OpenStreetMap and Overpass API (both free)
+// Function to fetch hotels data using OpenStreetMap and Overpass API specifically for Indian locations
 const fetchHostelsData = async (destination: string, budget: string): Promise<Hostel[] | null> => {
   try {
-    console.log("Fetching hostels for:", destination);
+    console.log("Fetching hotels for Indian location:", destination);
     
-    // First get location coordinates using Nominatim
+    // First get location coordinates using Nominatim restricted to India
     const geoResponse = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destination)}`,
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destination)}&countrycodes=in`,
       { headers: { "Accept-Language": "en" } }
     );
     
     if (!geoResponse.ok) {
-      console.error("Geo API request failed:", await geoResponse.text());
+      console.error("Geo API request failed for Indian location:", await geoResponse.text());
       throw new Error('Geo API request failed');
     }
     
     const geoData = await geoResponse.json();
-    console.log("Geocode data for hostels:", geoData);
+    console.log("Geocode data for Indian hotels:", geoData);
     
     if (!geoData || geoData.length === 0) {
-      console.error("Location not found for hostels:", destination);
+      console.error("Location not found in India for hotels:", destination);
       throw new Error('Invalid geo data');
     }
     
     const { lat, lon } = geoData[0];
-    console.log("Hostel search coordinates:", lat, lon);
+    console.log("Indian hotel search coordinates:", lat, lon);
     
-    // Use Overpass API to query for accommodations
+    // Use Overpass API to query for Indian accommodations
     // Define the search radius based on budget
     const radius = budget === 'cheap' ? 5000 : budget === 'moderate' ? 10000 : 15000;
     
-    // Query for tourism=hotel, tourism=hostel, and tourism=guest_house
+    // Query for tourism=hotel, tourism=hostel, and tourism=guest_house in India
     const overpassQuery = `
       [out:json];
       (
@@ -311,19 +313,19 @@ const fetchHostelsData = async (destination: string, budget: string): Promise<Ho
     );
     
     if (!overpassResponse.ok) {
-      console.error("Overpass API request failed:", await overpassResponse.text());
+      console.error("Overpass API request failed for Indian hotels:", await overpassResponse.text());
       throw new Error('Accommodation API request failed');
     }
     
     const overpassData = await overpassResponse.json();
-    console.log("Overpass API response:", overpassData);
+    console.log("Overpass API response for Indian hotels:", overpassData);
     
     if (!overpassData || !overpassData.elements || !Array.isArray(overpassData.elements)) {
-      console.error("Invalid accommodation data structure");
+      console.error("Invalid Indian accommodation data structure");
       throw new Error('Invalid accommodation data');
     }
     
-    // Process the results into our hostel format
+    // Process the results into our hostel format for Indian hotels
     const hostels: Hostel[] = [];
     const elements = overpassData.elements.filter(el => el.tags && el.tags.name);
     
@@ -331,16 +333,16 @@ const fetchHostelsData = async (destination: string, budget: string): Promise<Ho
       const element = elements[i];
       const tags = element.tags;
       
-      // Calculate price based on budget and star rating if available
-      let basePrice = budget === 'cheap' ? 30 : budget === 'moderate' ? 60 : 120;
+      // Calculate price based on budget and star rating for Indian hotels (in INR)
+      let basePrice = budget === 'cheap' ? 1500 : budget === 'moderate' ? 3000 : 6000;
       if (tags.stars) {
         basePrice = basePrice * (parseInt(tags.stars) / 2);
       }
       
-      const priceVariation = Math.random() * 20 - 10; // -10 to +10
-      const price = Math.max(15, Math.floor(basePrice + priceVariation));
+      const priceVariation = Math.random() * 500 - 250; // -250 to +250 INR
+      const price = Math.max(800, Math.floor(basePrice + priceVariation));
       
-      // Generate rating based on stars or random for realistic values
+      // Generate rating based on stars or random for realistic values for Indian hotels
       let rating = 3.0;
       if (tags.stars) {
         rating = parseFloat(tags.stars) / 5 * 5; // Convert to 5-star scale
@@ -349,61 +351,62 @@ const fetchHostelsData = async (destination: string, budget: string): Promise<Ho
       }
       
       // Use Wikimedia Commons image if available, otherwise use Unsplash
-      let imageUrl = `https://source.unsplash.com/featured/?hotel,${encodeURIComponent(tags.name || destination)}&sig=${i}`;
+      // Specifically looking for Indian hotel images
+      let imageUrl = `https://source.unsplash.com/featured/?india,hotel,${encodeURIComponent(tags.name || destination)}&sig=${i}`;
       
       hostels.push({
         name: tags.name || `${destination} Accommodation`,
         rating: rating,
         price: price,
-        currency: 'USD',
+        currency: 'INR', // Always INR for Indian hotels
         imageUrl: imageUrl,
         isMock: false
       });
     }
     
-    console.log("Generated hostel data:", hostels);
+    console.log("Generated Indian hotel data:", hostels);
     
     // If we couldn't get enough hostels, fill up with generated ones but mark as mock
     if (hostels.length === 0) {
-      console.log("No hostels found, generating mock data");
-      throw new Error('No hostels found');
+      console.log("No hotels found in India, generating mock data");
+      throw new Error('No hotels found in India');
     }
     
     return hostels;
   } catch (error) {
-    console.error('Error fetching hostels data:', error);
+    console.error('Error fetching hotels data for Indian location:', error);
     return null;
   }
 };
 
-// Function to fetch attractions data using OpenStreetMap and Overpass API (both free)
+// Function to fetch attractions data using OpenStreetMap and Overpass API specifically for Indian locations
 const fetchAttractionsData = async (destination: string): Promise<Attraction[] | null> => {
   try {
-    console.log("Fetching attractions for:", destination);
+    console.log("Fetching attractions for Indian location:", destination);
     
-    // First get location coordinates using Nominatim
+    // First get location coordinates using Nominatim restricted to India
     const geoResponse = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destination)}`,
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destination)}&countrycodes=in`,
       { headers: { "Accept-Language": "en" } }
     );
     
     if (!geoResponse.ok) {
-      console.error("Geo API request failed for attractions:", await geoResponse.text());
+      console.error("Geo API request failed for Indian attractions:", await geoResponse.text());
       throw new Error('Geo API request failed');
     }
     
     const geoData = await geoResponse.json();
-    console.log("Geocode data for attractions:", geoData);
+    console.log("Geocode data for Indian attractions:", geoData);
     
     if (!geoData || geoData.length === 0) {
-      console.error("Location not found for attractions:", destination);
+      console.error("Location not found in India for attractions:", destination);
       throw new Error('Invalid geo data');
     }
     
     const { lat, lon } = geoData[0];
-    console.log("Attraction search coordinates:", lat, lon);
+    console.log("Indian attraction search coordinates:", lat, lon);
     
-    // Use Overpass API to query for popular attractions
+    // Use Overpass API to query for popular attractions in India
     const radius = 15000; // 15km radius
     const overpassQuery = `
       [out:json];
@@ -412,6 +415,8 @@ const fetchAttractionsData = async (destination: string): Promise<Attraction[] |
         node["historic"](around:${radius},${lat},${lon});
         node["tourism"="museum"](around:${radius},${lat},${lon});
         node["leisure"="park"](around:${radius},${lat},${lon});
+        node["tourism"="viewpoint"](around:${radius},${lat},${lon});
+        node["amenity"="place_of_worship"](around:${radius},${lat},${lon}); // For temples, mosques, etc.
       );
       out body 5;
     `;
@@ -426,19 +431,19 @@ const fetchAttractionsData = async (destination: string): Promise<Attraction[] |
     );
     
     if (!overpassResponse.ok) {
-      console.error("Overpass API request failed for attractions:", await overpassResponse.text());
+      console.error("Overpass API request failed for Indian attractions:", await overpassResponse.text());
       throw new Error('Attractions API request failed');
     }
     
     const overpassData = await overpassResponse.json();
-    console.log("Overpass API response for attractions:", overpassData);
+    console.log("Overpass API response for Indian attractions:", overpassData);
     
     if (!overpassData || !overpassData.elements || !Array.isArray(overpassData.elements)) {
-      console.error("Invalid attractions data structure");
+      console.error("Invalid Indian attractions data structure");
       throw new Error('Invalid attractions data');
     }
     
-    // Process the results into our attractions format
+    // Process the results into our attractions format for Indian locations
     const attractions: Attraction[] = [];
     const elements = overpassData.elements.filter(el => el.tags && el.tags.name);
     
@@ -446,18 +451,20 @@ const fetchAttractionsData = async (destination: string): Promise<Attraction[] |
       const element = elements[i];
       const tags = element.tags;
       
-      // Generate description based on available tags
+      // Generate description based on available tags with Indian context
       let description = "";
       if (tags.description) {
         description = tags.description;
       } else if (tags.historic) {
-        description = `Historic ${tags.historic} in ${destination}, popular among tourists.`;
+        description = `Historic ${tags.historic} in ${destination}, showcasing India's rich heritage.`;
       } else if (tags.tourism === 'museum') {
-        description = `A fascinating museum in ${destination} showcasing important cultural artifacts.`;
+        description = `A fascinating museum in ${destination} displaying important Indian cultural artifacts.`;
       } else if (tags.leisure === 'park') {
-        description = `A beautiful park in ${destination}, perfect for relaxation and outdoor activities.`;
+        description = `A beautiful park in ${destination}, perfect for experiencing Indian nature.`;
+      } else if (tags.amenity === 'place_of_worship') {
+        description = `A sacred ${tags.religion || 'religious'} site in ${destination}, important to Indian spiritual traditions.`;
       } else {
-        description = `A popular attraction in ${destination} visited by many tourists each year.`;
+        description = `A popular attraction in ${destination}, visited by many tourists exploring India's wonders.`;
       }
       
       attractions.push({
@@ -468,17 +475,17 @@ const fetchAttractionsData = async (destination: string): Promise<Attraction[] |
       });
     }
     
-    console.log("Generated attraction data:", attractions);
+    console.log("Generated Indian attraction data:", attractions);
     
     // If we couldn't get enough attractions, signal this
     if (attractions.length === 0) {
-      console.log("No attractions found, will use mock data");
-      throw new Error('No attractions found');
+      console.log("No attractions found in India, will use mock data");
+      throw new Error('No attractions found in India');
     }
     
     return attractions;
   } catch (error) {
-    console.error('Error fetching attractions data:', error);
+    console.error('Error fetching attractions data for Indian location:', error);
     return null;
   }
 };
@@ -502,14 +509,14 @@ export const fetchItineraryDetails = async (params: ItineraryParams): Promise<It
     activities: []
   };
   
-  // Generate mock activities based on budget
+  // Generate activities based on budget for Indian travel
   const activities = {
     cheap: [
       `Free walking tour of ${updatedParams.destination}`,
       `Visit public parks and gardens in ${updatedParams.destination}`,
       `Explore local markets in ${updatedParams.destination}`,
       `Temple visits around ${updatedParams.destination}`,
-      `Visit free museums or attractions in ${updatedParams.destination}`
+      `Street food tasting in ${updatedParams.destination}`
     ],
     moderate: [
       `Guided tour of ${updatedParams.destination}'s main attractions`,
@@ -522,7 +529,7 @@ export const fetchItineraryDetails = async (params: ItineraryParams): Promise<It
       `Private guided tour of ${updatedParams.destination}`,
       `Fine dining experiences at top-rated restaurants in ${updatedParams.destination}`,
       `Luxury spa treatments in ${updatedParams.destination}`,
-      `Helicopter or private boat tours around ${updatedParams.destination}`,
+      `Private tours of historical sites in ${updatedParams.destination}`,
       `VIP access to exclusive attractions in ${updatedParams.destination}`
     ]
   };
@@ -548,7 +555,7 @@ export const fetchItineraryDetails = async (params: ItineraryParams): Promise<It
     const weatherResult = await Promise.race([
       weatherPromise,
       new Promise<null>((resolve) => setTimeout(() => {
-        console.log("Weather API timeout");
+        console.log("Weather API timeout for Indian location");
         resolve(null);
       }, 5000))
     ]);
@@ -556,7 +563,7 @@ export const fetchItineraryDetails = async (params: ItineraryParams): Promise<It
     const hostelsResult = await Promise.race([
       hostelsPromise,
       new Promise<null>((resolve) => setTimeout(() => {
-        console.log("Hostels API timeout");
+        console.log("Hotels API timeout for Indian location");
         resolve(null);
       }, 5000))
     ]);
@@ -564,37 +571,37 @@ export const fetchItineraryDetails = async (params: ItineraryParams): Promise<It
     const attractionsResult = await Promise.race([
       attractionsPromise,
       new Promise<null>((resolve) => setTimeout(() => {
-        console.log("Attractions API timeout");
+        console.log("Attractions API timeout for Indian location");
         resolve(null);
       }, 5000))
     ]);
     
     // Update itinerary with real data where available
     if (weatherResult) {
-      console.log("Using real weather data");
+      console.log("Using real weather data for Indian location");
       itineraryData.weather = weatherResult;
     } else {
-      console.log("Using mock weather data");
+      console.log("Using mock weather data for Indian location");
       // Use mock weather as fallback
       const mockData = mockItineraryData(updatedParams);
       itineraryData.weather = mockData.weather;
     }
     
     if (hostelsResult && hostelsResult.length > 0) {
-      console.log("Using real hostel data");
+      console.log("Using real hotel data for Indian location");
       itineraryData.hostels = hostelsResult;
     } else {
-      console.log("Using mock hostel data");
+      console.log("Using mock hotel data for Indian location");
       // Use mock hostels as fallback
       const mockData = mockItineraryData(updatedParams);
       itineraryData.hostels = mockData.hostels;
     }
     
     if (attractionsResult && attractionsResult.length > 0) {
-      console.log("Using real attraction data");
+      console.log("Using real attraction data for Indian location");
       itineraryData.attractions = attractionsResult;
     } else {
-      console.log("Using mock attraction data");
+      console.log("Using mock attraction data for Indian location");
       // Use mock attractions as fallback
       const mockData = mockItineraryData(updatedParams);
       itineraryData.attractions = mockData.attractions;
@@ -603,10 +610,10 @@ export const fetchItineraryDetails = async (params: ItineraryParams): Promise<It
     return itineraryData;
     
   } catch (error) {
-    console.error('Error in fetchItineraryDetails:', error);
+    console.error('Error in fetchItineraryDetails for Indian location:', error);
     
     // In case of any errors, return mock data
-    console.log("Error occurred, using mock data for India");
+    console.log("Error occurred, using mock data for Indian location");
     const mockData = mockItineraryData(updatedParams);
     return mockData;
   }

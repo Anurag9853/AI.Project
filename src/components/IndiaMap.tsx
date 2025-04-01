@@ -17,7 +17,7 @@ const IndiaMap = ({ selectedDestination }: IndiaMapProps) => {
   const [tokenInput, setTokenInput] = React.useState('');
   const [accessToken, setAccessToken] = React.useState(MAPBOX_PUBLIC_TOKEN || '');
 
-  // India's bounding box coordinates
+  // India's bounding box coordinates - more precisely defined for better focus
   const indiaBounds = [
     [68.1, 6.5],  // Southwest coordinates [lng, lat]
     [97.4, 35.5]  // Northeast coordinates [lng, lat]
@@ -26,14 +26,16 @@ const IndiaMap = ({ selectedDestination }: IndiaMapProps) => {
   useEffect(() => {
     if (!mapContainer.current || !accessToken) return;
 
-    // Initialize map
+    // Initialize map focused on India
     mapboxgl.accessToken = accessToken;
     
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/streets-v12',
       bounds: indiaBounds as mapboxgl.LngLatBoundsLike,
-      fitBoundsOptions: { padding: 50 }
+      fitBoundsOptions: { padding: 50 },
+      maxZoom: 12,
+      minZoom: 3
     });
 
     // Add navigation controls
@@ -46,8 +48,12 @@ const IndiaMap = ({ selectedDestination }: IndiaMapProps) => {
     map.current.on('load', () => {
       if (!map.current) return;
       
-      // You can add India border highlight if needed
-      // This would require GeoJSON data for India's borders
+      // Show only India on the map
+      try {
+        map.current.setFilter('country-boundaries', ['==', ['get', 'iso_3166_1'], 'IN']);
+      } catch (e) {
+        console.log("Could not filter to just India");
+      }
     });
 
     // Clean up on unmount
@@ -71,11 +77,17 @@ const IndiaMap = ({ selectedDestination }: IndiaMapProps) => {
       if (!map.current || !selectedDestination) return;
       
       // Get coordinates for the destination (only within India)
-      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(selectedDestination + ', India')}`)
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(selectedDestination)}&countrycodes=in`)
         .then(res => res.json())
         .then(data => {
           if (data && data.length > 0) {
             const { lat, lon } = data[0];
+            
+            // Remove existing markers if any
+            const markers = document.getElementsByClassName('mapboxgl-marker');
+            while(markers.length > 0){
+              markers[0].remove();
+            }
             
             // Create a marker at the location
             new mapboxgl.Marker({ color: '#FF0000' })
@@ -90,9 +102,9 @@ const IndiaMap = ({ selectedDestination }: IndiaMapProps) => {
             });
           }
         })
-        .catch(err => console.error('Error getting location:', err));
+        .catch(err => console.error('Error getting location in India:', err));
     }
-  }, [selectedDestination, map.current]);
+  }, [selectedDestination]);
 
   const handleTokenSubmit = () => {
     if (tokenInput) {
@@ -122,7 +134,7 @@ const IndiaMap = ({ selectedDestination }: IndiaMapProps) => {
           </p>
         </div>
       ) : (
-        <div ref={mapContainer} className="w-full h-[300px] rounded-lg overflow-hidden" />
+        <div ref={mapContainer} className="w-full h-[300px] rounded-lg overflow-hidden border border-gray-200" />
       )}
     </div>
   );
