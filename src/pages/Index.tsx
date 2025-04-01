@@ -17,9 +17,22 @@ const Index = () => {
   }) => {
     setIsLoading(true);
     try {
+      toast.info(`Finding travel details for ${formData.destination}...`);
       const data = await fetchItineraryDetails(formData);
       setItineraryResults(data);
-      toast.success('Travel itinerary fetched successfully!');
+      
+      // Check if we're using mostly real or mock data
+      const hasMockWeather = data.weather?.isMock;
+      const hasMockHostels = !data.hostels || data.hostels.some(h => h.isMock);
+      const hasMockAttractions = !data.attractions || data.attractions.some(a => a.isMock);
+      
+      if (hasMockWeather && hasMockHostels && hasMockAttractions) {
+        toast.success('Travel itinerary created with sample data!', {
+          description: 'Some information may not be accurate.'
+        });
+      } else {
+        toast.success('Travel itinerary fetched successfully!');
+      }
     } catch (error) {
       console.error('Error fetching itinerary details:', error);
       toast.error('Failed to fetch itinerary details. Please try again.');
