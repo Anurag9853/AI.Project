@@ -1,4 +1,3 @@
-
 interface ItineraryParams {
   destination: string;
   days: number;
@@ -42,27 +41,30 @@ interface ItineraryData {
 
 // Mock data to use when API is unavailable
 const mockItineraryData = (params: ItineraryParams): ItineraryData => {
+  // Extract just the city name without ", India" for better readability
+  const cityName = params.destination.replace(/, India$/i, '');
+  
   const activities = {
     cheap: [
-      `Free walking tour of ${params.destination}`,
-      `Visit public parks and gardens in ${params.destination}`,
-      `Explore local markets in ${params.destination}`,
-      `Hiking trails around ${params.destination}`,
-      `Visit free museums or attractions in ${params.destination}`
+      `Free walking tour of ${cityName}`,
+      `Visit public parks and gardens in ${cityName}`,
+      `Explore local markets in ${cityName}`,
+      `Temple visits around ${cityName}`,
+      `Visit free museums or attractions in ${cityName}`
     ],
     moderate: [
-      `Guided tour of ${params.destination}'s main attractions`,
-      `Visit popular museums and historical sites in ${params.destination}`,
-      `Try local cuisine at mid-range restaurants in ${params.destination}`,
-      `Day trip to nearby attractions from ${params.destination}`,
-      `Cultural shows or performances in ${params.destination}`
+      `Guided tour of ${cityName}'s main attractions`,
+      `Visit popular museums and historical sites in ${cityName}`,
+      `Try local cuisine at mid-range restaurants in ${cityName}`,
+      `Day trip to nearby attractions from ${cityName}`,
+      `Cultural shows or performances in ${cityName}`
     ],
     luxury: [
-      `Private guided tour of ${params.destination}`,
-      `Fine dining experiences at top-rated restaurants in ${params.destination}`,
-      `Luxury spa treatments in ${params.destination}`,
-      `Helicopter or private boat tours around ${params.destination}`,
-      `VIP access to exclusive attractions in ${params.destination}`
+      `Private guided tour of ${cityName}`,
+      `Fine dining experiences at top-rated restaurants in ${cityName}`,
+      `Luxury spa treatments in ${cityName}`,
+      `Helicopter or private boat tours around ${cityName}`,
+      `VIP access to exclusive attractions in ${cityName}`
     ]
   };
 
@@ -70,51 +72,51 @@ const mockItineraryData = (params: ItineraryParams): ItineraryData => {
   const budgetKey = params.budget as keyof typeof activities;
   const selectedActivities = activities[budgetKey] || activities.moderate;
 
-  // Mock hostel data
+  // Mock hostel data with Indian names
   const mockHostels: Hostel[] = [
     {
-      name: `${params.destination} Backpackers Hostel`,
+      name: `${cityName} Backpackers Hostel`,
       rating: 4.2,
-      price: params.budget === 'cheap' ? 15 : params.budget === 'moderate' ? 30 : 60,
-      currency: 'USD',
+      price: params.budget === 'cheap' ? 800 : params.budget === 'moderate' ? 1500 : 3000,
+      currency: 'INR',
       imageUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
       isMock: true
     },
     {
-      name: `${params.destination} Central Hostel`,
+      name: `${cityName} Heritage Stay`,
       rating: 4.5,
-      price: params.budget === 'cheap' ? 18 : params.budget === 'moderate' ? 35 : 70,
-      currency: 'USD',
+      price: params.budget === 'cheap' ? 1000 : params.budget === 'moderate' ? 2000 : 4000,
+      currency: 'INR',
       imageUrl: 'https://images.unsplash.com/photo-1520277739336-7bf67edfa768?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
       isMock: true
     },
     {
-      name: `${params.destination} Traveller's Inn`,
+      name: `${cityName} Traveller's Inn`,
       rating: 4.3,
-      price: params.budget === 'cheap' ? 20 : params.budget === 'moderate' ? 40 : 80,
-      currency: 'USD',
+      price: params.budget === 'cheap' ? 1200 : params.budget === 'moderate' ? 2500 : 5000,
+      currency: 'INR',
       imageUrl: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
       isMock: true
     }
   ];
 
-  // Mock attraction data
+  // Mock attraction data for Indian locations
   const mockAttractions: Attraction[] = [
     {
-      name: `${params.destination} Historical Museum`,
-      description: `Learn about the rich history of ${params.destination}`,
+      name: `${cityName} Heritage Museum`,
+      description: `Learn about the rich history of ${cityName}`,
       rating: 4.6,
       isMock: true
     },
     {
-      name: `${params.destination} Central Park`,
-      description: `Enjoy the beautiful nature in the heart of ${params.destination}`,
+      name: `${cityName} Temple Complex`,
+      description: `Experience the spiritual traditions in ${cityName}`,
       rating: 4.8,
       isMock: true
     },
     {
-      name: `${params.destination} Cultural Center`,
-      description: `Experience the local culture and traditions of ${params.destination}`,
+      name: `${cityName} Cultural Center`,
+      description: `Experience the local culture and traditions of ${cityName}`,
       rating: 4.4,
       isMock: true
     }
@@ -122,7 +124,7 @@ const mockItineraryData = (params: ItineraryParams): ItineraryData => {
 
   // Mock weather data
   const mockWeather: Weather = {
-    temperature: 22,
+    temperature: 28,
     condition: 'Sunny',
     icon: 'https://cdn.weatherapi.com/weather/64x64/day/113.png',
     isMock: true
@@ -484,56 +486,63 @@ const fetchAttractionsData = async (destination: string): Promise<Attraction[] |
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const fetchItineraryDetails = async (params: ItineraryParams): Promise<ItineraryData> => {
+  // Make sure destination ends with ", India" for better search results
+  const destination = params.destination.includes("India") 
+    ? params.destination 
+    : `${params.destination}, India`;
+  
+  const updatedParams = { ...params, destination };
+  
   // Start with a basic itinerary structure
   let itineraryData: ItineraryData = {
-    destination: params.destination,
-    days: params.days,
-    budget: params.budget,
-    travelers: params.travelers,
+    destination: updatedParams.destination,
+    days: updatedParams.days,
+    budget: updatedParams.budget,
+    travelers: updatedParams.travelers,
     activities: []
   };
   
   // Generate mock activities based on budget
   const activities = {
     cheap: [
-      `Free walking tour of ${params.destination}`,
-      `Visit public parks and gardens in ${params.destination}`,
-      `Explore local markets in ${params.destination}`,
-      `Hiking trails around ${params.destination}`,
-      `Visit free museums or attractions in ${params.destination}`
+      `Free walking tour of ${updatedParams.destination}`,
+      `Visit public parks and gardens in ${updatedParams.destination}`,
+      `Explore local markets in ${updatedParams.destination}`,
+      `Temple visits around ${updatedParams.destination}`,
+      `Visit free museums or attractions in ${updatedParams.destination}`
     ],
     moderate: [
-      `Guided tour of ${params.destination}'s main attractions`,
-      `Visit popular museums and historical sites in ${params.destination}`,
-      `Try local cuisine at mid-range restaurants in ${params.destination}`,
-      `Day trip to nearby attractions from ${params.destination}`,
-      `Cultural shows or performances in ${params.destination}`
+      `Guided tour of ${updatedParams.destination}'s main attractions`,
+      `Visit popular museums and historical sites in ${updatedParams.destination}`,
+      `Try local cuisine at mid-range restaurants in ${updatedParams.destination}`,
+      `Day trip to nearby attractions from ${updatedParams.destination}`,
+      `Cultural shows or performances in ${updatedParams.destination}`
     ],
     luxury: [
-      `Private guided tour of ${params.destination}`,
-      `Fine dining experiences at top-rated restaurants in ${params.destination}`,
-      `Luxury spa treatments in ${params.destination}`,
-      `Helicopter or private boat tours around ${params.destination}`,
-      `VIP access to exclusive attractions in ${params.destination}`
+      `Private guided tour of ${updatedParams.destination}`,
+      `Fine dining experiences at top-rated restaurants in ${updatedParams.destination}`,
+      `Luxury spa treatments in ${updatedParams.destination}`,
+      `Helicopter or private boat tours around ${updatedParams.destination}`,
+      `VIP access to exclusive attractions in ${updatedParams.destination}`
     ]
   };
   
   // Select activities based on budget
-  const budgetKey = params.budget as keyof typeof activities;
+  const budgetKey = updatedParams.budget as keyof typeof activities;
   itineraryData.activities = activities[budgetKey] || activities.moderate;
-  itineraryData.activities = itineraryData.activities.slice(0, Math.min(params.days + 2, itineraryData.activities.length));
+  itineraryData.activities = itineraryData.activities.slice(0, Math.min(updatedParams.days + 2, itineraryData.activities.length));
   
   try {
-    console.log("Starting to fetch real data");
+    console.log("Starting to fetch real data for Indian destination");
     
     // Fetch all external data in parallel with small delay between each to prevent rate limiting
-    const weatherPromise = fetchWeatherData(params.destination);
+    const weatherPromise = fetchWeatherData(updatedParams.destination);
     await delay(300); // Small delay to prevent rate limiting
     
-    const hostelsPromise = fetchHostelsData(params.destination, params.budget);
+    const hostelsPromise = fetchHostelsData(updatedParams.destination, updatedParams.budget);
     await delay(300); // Small delay to prevent rate limiting
     
-    const attractionsPromise = fetchAttractionsData(params.destination);
+    const attractionsPromise = fetchAttractionsData(updatedParams.destination);
     
     // Wait for all promises with timeout to prevent hanging if any API is slow
     const weatherResult = await Promise.race([
@@ -567,7 +576,7 @@ export const fetchItineraryDetails = async (params: ItineraryParams): Promise<It
     } else {
       console.log("Using mock weather data");
       // Use mock weather as fallback
-      const mockData = mockItineraryData(params);
+      const mockData = mockItineraryData(updatedParams);
       itineraryData.weather = mockData.weather;
     }
     
@@ -577,7 +586,7 @@ export const fetchItineraryDetails = async (params: ItineraryParams): Promise<It
     } else {
       console.log("Using mock hostel data");
       // Use mock hostels as fallback
-      const mockData = mockItineraryData(params);
+      const mockData = mockItineraryData(updatedParams);
       itineraryData.hostels = mockData.hostels;
     }
     
@@ -587,7 +596,7 @@ export const fetchItineraryDetails = async (params: ItineraryParams): Promise<It
     } else {
       console.log("Using mock attraction data");
       // Use mock attractions as fallback
-      const mockData = mockItineraryData(params);
+      const mockData = mockItineraryData(updatedParams);
       itineraryData.attractions = mockData.attractions;
     }
     
@@ -597,8 +606,8 @@ export const fetchItineraryDetails = async (params: ItineraryParams): Promise<It
     console.error('Error in fetchItineraryDetails:', error);
     
     // In case of any errors, return mock data
-    console.log("Error occurred, using mock data");
-    const mockData = mockItineraryData(params);
+    console.log("Error occurred, using mock data for India");
+    const mockData = mockItineraryData(updatedParams);
     return mockData;
   }
 };

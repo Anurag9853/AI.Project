@@ -22,39 +22,93 @@ interface TravelFormProps {
   isLoading: boolean;
 }
 
+const popularIndianDestinations = [
+  "Delhi",
+  "Mumbai",
+  "Jaipur",
+  "Agra",
+  "Varanasi",
+  "Goa",
+  "Kolkata",
+  "Chennai",
+  "Hyderabad",
+  "Bengaluru",
+  "Amritsar",
+  "Rishikesh",
+  "Udaipur",
+  "Shimla",
+  "Darjeeling"
+];
+
 const TravelForm = ({ onSubmit, isLoading }: TravelFormProps) => {
   const [destination, setDestination] = useState('');
   const [days, setDays] = useState<number>(1);
   const [budget, setBudget] = useState<string>('');
   const [travelers, setTravelers] = useState<string>('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Append ", India" if not already present
+    const formattedDestination = destination.includes("India") 
+      ? destination 
+      : `${destination}, India`;
+    
     onSubmit({
-      destination,
+      destination: formattedDestination,
       days,
       budget,
       travelers
     });
   };
 
+  const filteredSuggestions = popularIndianDestinations.filter(
+    dest => dest.toLowerCase().includes(destination.toLowerCase())
+  );
+
   return (
     <div className="bg-white p-6 rounded-lg shadow">
-      <h2 className="text-xl font-semibold mb-4">Tell Us Your Travel Preferences</h2>
+      <h2 className="text-xl font-semibold mb-4">Tell Us Your India Travel Preferences</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="destination">Where do you want to go?</Label>
+          <Label htmlFor="destination">Where in India do you want to go?</Label>
           <div className="flex items-center relative">
             <MapPin className="absolute left-3 text-gray-500" size={18} />
             <Input
               id="destination"
               className="pl-10"
-              placeholder="Enter destination"
+              placeholder="Enter Indian destination"
               value={destination}
-              onChange={(e) => setDestination(e.target.value)}
+              onChange={(e) => {
+                setDestination(e.target.value);
+                setShowSuggestions(true);
+              }}
+              onFocus={() => setShowSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
               required
             />
           </div>
+          
+          {showSuggestions && destination.length > 0 && (
+            <div className="absolute z-10 bg-white border rounded-md shadow-md mt-1 max-h-48 overflow-y-auto w-full max-w-[calc(50%-3rem)]">
+              {filteredSuggestions.length > 0 ? (
+                filteredSuggestions.map((suggestion) => (
+                  <div
+                    key={suggestion}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => {
+                      setDestination(suggestion);
+                      setShowSuggestions(false);
+                    }}
+                  >
+                    {suggestion}
+                  </div>
+                ))
+              ) : (
+                <div className="px-4 py-2 text-gray-500">No suggestions found</div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -114,7 +168,7 @@ const TravelForm = ({ onSubmit, isLoading }: TravelFormProps) => {
           className="w-full" 
           disabled={isLoading}
         >
-          {isLoading ? 'Generating Itinerary...' : 'Generate Itinerary'}
+          {isLoading ? 'Generating Itinerary...' : 'Generate India Itinerary'}
         </Button>
       </form>
     </div>
