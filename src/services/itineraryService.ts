@@ -12,18 +12,21 @@ interface Hostel {
   price: number;
   currency: string;
   imageUrl: string;
+  isMock?: boolean;
 }
 
 interface Attraction {
   name: string;
   description: string;
   rating: number;
+  isMock?: boolean;
 }
 
 interface Weather {
   temperature: number;
   condition: string;
   icon: string;
+  isMock?: boolean;
 }
 
 interface ItineraryData {
@@ -74,21 +77,24 @@ const mockItineraryData = (params: ItineraryParams): ItineraryData => {
       rating: 4.2,
       price: params.budget === 'cheap' ? 15 : params.budget === 'moderate' ? 30 : 60,
       currency: 'USD',
-      imageUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60'
+      imageUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+      isMock: true
     },
     {
       name: `${params.destination} Central Hostel`,
       rating: 4.5,
       price: params.budget === 'cheap' ? 18 : params.budget === 'moderate' ? 35 : 70,
       currency: 'USD',
-      imageUrl: 'https://images.unsplash.com/photo-1520277739336-7bf67edfa768?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60'
+      imageUrl: 'https://images.unsplash.com/photo-1520277739336-7bf67edfa768?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+      isMock: true
     },
     {
       name: `${params.destination} Traveller's Inn`,
       rating: 4.3,
       price: params.budget === 'cheap' ? 20 : params.budget === 'moderate' ? 40 : 80,
       currency: 'USD',
-      imageUrl: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60'
+      imageUrl: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+      isMock: true
     }
   ];
 
@@ -97,17 +103,20 @@ const mockItineraryData = (params: ItineraryParams): ItineraryData => {
     {
       name: `${params.destination} Historical Museum`,
       description: `Learn about the rich history of ${params.destination}`,
-      rating: 4.6
+      rating: 4.6,
+      isMock: true
     },
     {
       name: `${params.destination} Central Park`,
       description: `Enjoy the beautiful nature in the heart of ${params.destination}`,
-      rating: 4.8
+      rating: 4.8,
+      isMock: true
     },
     {
       name: `${params.destination} Cultural Center`,
       description: `Experience the local culture and traditions of ${params.destination}`,
-      rating: 4.4
+      rating: 4.4,
+      isMock: true
     }
   ];
 
@@ -115,7 +124,8 @@ const mockItineraryData = (params: ItineraryParams): ItineraryData => {
   const mockWeather: Weather = {
     temperature: 22,
     condition: 'Sunny',
-    icon: 'https://cdn.weatherapi.com/weather/64x64/day/113.png'
+    icon: 'https://cdn.weatherapi.com/weather/64x64/day/113.png',
+    isMock: true
   };
 
   // Create mock itinerary data
@@ -145,7 +155,8 @@ const fetchWeatherData = async (destination: string): Promise<Weather | null> =>
     return {
       temperature: data.current.temp_c,
       condition: data.current.condition.text,
-      icon: data.current.condition.icon
+      icon: data.current.condition.icon,
+      isMock: false
     };
   } catch (error) {
     console.error('Error fetching weather data:', error);
@@ -200,7 +211,8 @@ const fetchHostelsData = async (destination: string, budget: string): Promise<Ho
       price: hotel.price_breakdown?.gross_price || 
              (budget === 'cheap' ? 20 : budget === 'moderate' ? 40 : 80),
       currency: hotel.price_breakdown?.currency || 'USD',
-      imageUrl: hotel.max_photo_url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60'
+      imageUrl: hotel.max_photo_url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+      isMock: false
     }));
   } catch (error) {
     console.error('Error fetching hostels data:', error);
@@ -252,7 +264,8 @@ const fetchAttractionsData = async (destination: string): Promise<Attraction[] |
     return attractionsData.data.map((attraction: any) => ({
       name: attraction.name,
       description: attraction.description || `A popular attraction in ${destination}`,
-      rating: attraction.bubbleRating?.rating || 4.5
+      rating: attraction.bubbleRating?.rating || 4.5,
+      isMock: false
     }));
   } catch (error) {
     console.error('Error fetching attractions data:', error);

@@ -1,7 +1,8 @@
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { MapPin, Calendar, DollarSign, Users, Activity, Hotel, CloudSun } from "lucide-react";
+import { MapPin, Calendar, DollarSign, Users, Activity, Hotel, CloudSun, AlertTriangle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 interface Hostel {
   name: string;
@@ -9,18 +10,21 @@ interface Hostel {
   price: number;
   currency: string;
   imageUrl: string;
+  isMock?: boolean;
 }
 
 interface Attraction {
   name: string;
   description: string;
   rating: number;
+  isMock?: boolean;
 }
 
 interface Weather {
   temperature: number;
   condition: string;
   icon: string;
+  isMock?: boolean;
 }
 
 interface ItineraryResultProps {
@@ -76,6 +80,11 @@ const ItineraryResult = ({ results, isLoading }: ItineraryResultProps) => {
                 <div className="flex items-center gap-2">
                   <CloudSun className="text-blue-500" size={20} />
                   <span className="font-medium">{results.weather.temperature}°C</span>
+                  {results.weather.isMock && (
+                    <Badge variant="outline" className="text-xs bg-yellow-50 text-yellow-800 border-yellow-300">
+                      <AlertTriangle className="mr-1" size={12} /> Demo data
+                    </Badge>
+                  )}
                 </div>
                 <span className="text-sm text-gray-500">{results.weather.condition}</span>
               </div>
@@ -119,19 +128,33 @@ const ItineraryResult = ({ results, isLoading }: ItineraryResultProps) => {
       {/* Hostels Section */}
       {results.hostels && results.hostels.length > 0 && (
         <div>
-          <h3 className="text-xl font-semibold mb-3 flex items-center gap-2">
-            <Hotel className="text-blue-500" size={20} />
-            Recommended Accommodations
-          </h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-xl font-semibold flex items-center gap-2">
+              <Hotel className="text-blue-500" size={20} />
+              Recommended Accommodations
+            </h3>
+            {results.hostels.some(hostel => hostel.isMock) && (
+              <Badge variant="outline" className="text-xs bg-yellow-50 text-yellow-800 border-yellow-300">
+                <AlertTriangle className="mr-1" size={12} /> Demo data
+              </Badge>
+            )}
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {results.hostels.map((hostel, index) => (
               <Card key={index} className="overflow-hidden">
-                <div className="h-48 overflow-hidden">
+                <div className="h-48 overflow-hidden relative">
                   <img 
                     src={hostel.imageUrl} 
                     alt={hostel.name} 
                     className="w-full h-full object-cover transition-transform hover:scale-105"
                   />
+                  {hostel.isMock && (
+                    <div className="absolute top-2 right-2">
+                      <Badge variant="outline" className="text-xs bg-yellow-50 text-yellow-800 border-yellow-300">
+                        <AlertTriangle className="mr-1" size={12} /> Demo
+                      </Badge>
+                    </div>
+                  )}
                 </div>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg">{hostel.name}</CardTitle>
@@ -159,19 +182,33 @@ const ItineraryResult = ({ results, isLoading }: ItineraryResultProps) => {
       {/* Attractions Section */}
       {results.attractions && results.attractions.length > 0 && (
         <div>
-          <h3 className="text-xl font-semibold mb-3 flex items-center gap-2">
-            <MapPin className="text-blue-500" size={20} />
-            Top Attractions in {results.destination}
-          </h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-xl font-semibold flex items-center gap-2">
+              <MapPin className="text-blue-500" size={20} />
+              Top Attractions in {results.destination}
+            </h3>
+            {results.attractions.some(attraction => attraction.isMock) && (
+              <Badge variant="outline" className="text-xs bg-yellow-50 text-yellow-800 border-yellow-300">
+                <AlertTriangle className="mr-1" size={12} /> Demo data
+              </Badge>
+            )}
+          </div>
           <div className="space-y-4">
             {results.attractions.map((attraction, index) => (
               <Card key={index}>
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-center">
                     <CardTitle className="text-lg">{attraction.name}</CardTitle>
-                    <span className="bg-blue-500 text-white px-2 py-1 rounded text-sm font-bold">
-                      {attraction.rating.toFixed(1)}
-                    </span>
+                    <div className="flex items-center">
+                      <span className="bg-blue-500 text-white px-2 py-1 rounded text-sm font-bold">
+                        {attraction.rating.toFixed(1)}
+                      </span>
+                      {attraction.isMock && (
+                        <Badge variant="outline" className="ml-2 text-xs bg-yellow-50 text-yellow-800 border-yellow-300">
+                          <AlertTriangle className="mr-1" size={12} /> Demo
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent>
