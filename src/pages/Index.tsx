@@ -1,32 +1,28 @@
 
 import { useState } from 'react';
-import BookingForm from '@/components/BookingForm';
-import BookingResult from '@/components/BookingResult';
-import { fetchBookingDetails } from '@/services/bookingService';
+import TravelForm from '@/components/TravelForm';
+import ItineraryResult from '@/components/ItineraryResult';
+import { fetchItineraryDetails } from '@/services/itineraryService';
 import { toast } from 'sonner';
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [bookingResults, setBookingResults] = useState<any>(null);
+  const [itineraryResults, setItineraryResults] = useState<any>(null);
 
-  const handleBookingSearch = async (formData: {
-    country: string;
-    hotelid: string;
-    checkin: string;
-    checkout: string;
-    currency: string;
-    kids: number;
-    adults: number;
-    rooms: number;
+  const handleItinerarySearch = async (formData: {
+    destination: string;
+    days: number;
+    budget: string;
+    travelers: string;
   }) => {
     setIsLoading(true);
     try {
-      const data = await fetchBookingDetails(formData);
-      setBookingResults(data);
-      toast.success('Booking details fetched successfully!');
+      const data = await fetchItineraryDetails(formData);
+      setItineraryResults(data);
+      toast.success('Travel itinerary fetched successfully!');
     } catch (error) {
-      console.error('Error fetching booking details:', error);
-      toast.error('Failed to fetch booking details. Please try again.');
+      console.error('Error fetching itinerary details:', error);
+      toast.error('Failed to fetch itinerary details. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -35,15 +31,15 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="container mx-auto p-5">
-        <h1 className="text-4xl font-bold text-center mb-5">Hotel Booking System 🏨</h1>
-        <p className="text-center mb-8">Find the perfect accommodation for your next trip!</p>
+        <h1 className="text-4xl font-bold text-center mb-5">Travel Itinerary Planner 🏕️🌴</h1>
+        <p className="text-center mb-8">Find the perfect plan for your next adventure!</p>
         
         <div className="grid gap-8 md:grid-cols-[1fr_1fr] lg:grid-cols-[2fr_3fr]">
           <div>
-            <BookingForm onSubmit={handleBookingSearch} isLoading={isLoading} />
+            <TravelForm onSubmit={handleItinerarySearch} isLoading={isLoading} />
           </div>
           <div>
-            <BookingResult results={bookingResults} isLoading={isLoading} />
+            <ItineraryResult results={itineraryResults} isLoading={isLoading} />
           </div>
         </div>
       </div>
