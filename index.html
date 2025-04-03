@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -9,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="css/toast.css">
     <style>
       body {
         font-family: 'Inter', sans-serif;
@@ -24,34 +24,6 @@
       @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
-      }
-      .toast {
-        position: fixed;
-        top: 16px;
-        right: 16px;
-        padding: 16px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        z-index: 100;
-        transform: translateY(-100%);
-        opacity: 0;
-        transition: transform 0.3s, opacity 0.3s;
-      }
-      .toast.show {
-        transform: translateY(0);
-        opacity: 1;
-      }
-      .toast.success {
-        background-color: #dcfce7;
-        border-left: 4px solid #16a34a;
-      }
-      .toast.error {
-        background-color: #fee2e2;
-        border-left: 4px solid #dc2626;
-      }
-      .toast.info {
-        background-color: #dbeafe;
-        border-left: 4px solid #3b82f6;
       }
     </style>
   </head>
@@ -171,6 +143,11 @@
       </div>
     </div>
 
+    <!-- Load utility scripts first -->
+    <script src="js/utils.js"></script>
+    <script src="js/formComponents.js"></script>
+    
+    <!-- Load functionality scripts -->
     <script src="js/toast.js"></script>
     <script src="js/destinations.js"></script>
     <script src="js/itineraryService.js"></script>

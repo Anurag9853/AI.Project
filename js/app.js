@@ -1,5 +1,5 @@
-
 document.addEventListener('DOMContentLoaded', () => {
+  // DOM elements
   const travelForm = document.getElementById('travel-form');
   const submitButton = document.getElementById('submit-button');
   const destinationInput = document.getElementById('destination');
@@ -13,16 +13,14 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Setup destination autocomplete
   destinationInput.addEventListener('input', () => {
-    const value = destinationInput.value.toLowerCase();
+    const value = destinationInput.value;
     
     if (value.length < 1) {
       destinationSuggestions.classList.add('hidden');
       return;
     }
     
-    const filteredSuggestions = popularIndianDestinations.filter(
-      dest => dest.toLowerCase().includes(value)
-    );
+    const filteredSuggestions = Utils.filterDestinations(value, popularIndianDestinations);
     
     if (filteredSuggestions.length > 0) {
       renderSuggestions(filteredSuggestions);
@@ -34,10 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
   
   destinationInput.addEventListener('focus', () => {
     if (destinationInput.value.length > 0) {
-      const value = destinationInput.value.toLowerCase();
-      const filteredSuggestions = popularIndianDestinations.filter(
-        dest => dest.toLowerCase().includes(value)
-      );
+      const value = destinationInput.value;
+      const filteredSuggestions = Utils.filterDestinations(value, popularIndianDestinations);
       
       if (filteredSuggestions.length > 0) {
         renderSuggestions(filteredSuggestions);
@@ -56,18 +52,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderSuggestions(suggestions) {
     destinationSuggestions.innerHTML = '';
     
-    suggestions.forEach((suggestion) => {
-      const item = document.createElement('div');
-      item.className = 'px-4 py-2 hover:bg-gray-100 cursor-pointer';
-      item.textContent = suggestion;
-      
-      item.addEventListener('click', () => {
-        destinationInput.value = suggestion;
-        destinationSuggestions.classList.add('hidden');
-      });
-      
-      destinationSuggestions.appendChild(item);
+    const suggestionList = FormComponents.createSuggestionsList(suggestions, (suggestion) => {
+      destinationInput.value = suggestion;
+      destinationSuggestions.classList.add('hidden');
     });
+    
+    destinationSuggestions.appendChild(suggestionList);
   }
   
   // Handle form submission
@@ -77,16 +67,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isLoading) return;
     
     const formData = {
-      destination: destinationInput.value.includes('India') 
-        ? destinationInput.value 
-        : `${destinationInput.value}, India`,
+      destination: Utils.formatDestination(destinationInput.value),
       days: document.getElementById('days').value,
       budget: document.getElementById('budget').value,
       travelers: document.getElementById('travelers').value
     };
     
     // Validation
-    if (!formData.destination || !formData.days || !formData.budget || !formData.travelers) {
+    if (!Utils.validateTravelForm(formData)) {
       toast.error('Please fill in all fields');
       return;
     }
@@ -154,6 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
     feather.replace();
   }
   
+  // Component rendering functions - separated from the main logic
   function createMainItineraryCard(results) {
     const card = document.createElement('div');
     card.className = 'bg-white rounded-lg shadow overflow-hidden';
