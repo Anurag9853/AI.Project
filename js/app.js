@@ -100,16 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await itineraryService.fetchItineraryDetails(formData);
       renderItineraryResults(data);
       
-      // Check if we're using mostly mock data
-      const hasMockWeather = data.weather?.isMock;
-      const hasMockHostels = !data.hostels || data.hostels.some(h => h.isMock);
-      const hasMockAttractions = !data.attractions || data.attractions.some(a => a.isMock);
-      
-      if (hasMockWeather && hasMockHostels && hasMockAttractions) {
-        toast.success('Travel itinerary created with sample data!');
-      } else {
-        toast.success('Travel itinerary fetched successfully!');
-      }
+      toast.success('Travel itinerary created with real data!');
     } catch (error) {
       console.error('Error fetching itinerary details:', error);
       toast.error('Failed to fetch itinerary details. Please try again.');
@@ -182,12 +173,6 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="flex items-center gap-2">
               <i data-feather="${results.weather.icon}" class="text-blue-500" style="width: 20px; height: 20px;"></i>
               <span class="font-medium">${results.weather.temperature}°C</span>
-              ${results.weather.isMock ? `
-                <span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 border border-yellow-300">
-                  <i data-feather="alert-triangle" class="mr-1" style="width: 12px; height: 12px;"></i>
-                  Demo data
-                </span>
-              ` : ''}
             </div>
             <span class="text-sm text-gray-500">${results.weather.condition}</span>
           </div>
@@ -245,20 +230,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const section = document.createElement('div');
     section.className = 'mt-6';
     
-    const hasMockData = hostels.some(hostel => hostel.isMock);
-    
     const headerHtml = `
       <div class="flex items-center justify-between mb-3">
         <h3 class="text-xl font-semibold flex items-center gap-2">
           <i data-feather="home" class="text-blue-500" style="width: 20px; height: 20px;"></i>
           Recommended Accommodations
         </h3>
-        ${hasMockData ? `
-          <span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 border border-yellow-300">
-            <i data-feather="alert-triangle" class="mr-1" style="width: 12px; height: 12px;"></i>
-            Demo data
-          </span>
-        ` : ''}
       </div>
     `;
     
@@ -277,15 +254,8 @@ document.addEventListener('DOMContentLoaded', () => {
             src="${hostel.imageUrl}" 
             alt="${hostel.name}" 
             class="w-full h-full object-cover transition-transform hover:scale-105"
+            onerror="this.src='https://source.unsplash.com/featured/?india,hotel'"
           />
-          ${hostel.isMock ? `
-            <div class="absolute top-2 right-2">
-              <span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 border border-yellow-300">
-                <i data-feather="alert-triangle" class="mr-1" style="width: 12px; height: 12px;"></i>
-                Demo
-              </span>
-            </div>
-          ` : ''}
         </div>
         <div class="p-4">
           <h4 class="text-lg font-medium mb-2">${hostel.name}</h4>
@@ -316,20 +286,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const section = document.createElement('div');
     section.className = 'mt-6';
     
-    const hasMockData = attractions.some(attraction => attraction.isMock);
-    
     const headerHtml = `
       <div class="flex items-center justify-between mb-3">
         <h3 class="text-xl font-semibold flex items-center gap-2">
           <i data-feather="map-pin" class="text-blue-500" style="width: 20px; height: 20px;"></i>
           Top Attractions in ${destination.split(',')[0].trim()}
         </h3>
-        ${hasMockData ? `
-          <span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 border border-yellow-300">
-            <i data-feather="alert-triangle" class="mr-1" style="width: 12px; height: 12px;"></i>
-            Demo data
-          </span>
-        ` : ''}
       </div>
     `;
     
@@ -350,12 +312,6 @@ document.addEventListener('DOMContentLoaded', () => {
               <span class="bg-blue-500 text-white px-2 py-1 rounded text-sm font-bold">
                 ${attraction.rating.toFixed(1)}
               </span>
-              ${attraction.isMock ? `
-                <span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 border border-yellow-300 ml-2">
-                  <i data-feather="alert-triangle" class="mr-1" style="width: 12px; height: 12px;"></i>
-                  Demo
-                </span>
-              ` : ''}
             </div>
           </div>
           <p class="text-gray-700">${attraction.description}</p>

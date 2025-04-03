@@ -19,6 +19,7 @@ class ToastManager {
     let iconName = 'info';
     if (type === 'success') iconName = 'check-circle';
     if (type === 'error') iconName = 'alert-circle';
+    if (type === 'warning') iconName = 'alert-triangle';
     
     icon.innerHTML = `<i data-feather="${iconName}"></i>`;
     
@@ -56,6 +57,10 @@ class ToastManager {
   
   info(message, duration) {
     this.show(message, 'info', duration);
+  }
+  
+  warning(message, duration) {
+    this.show(message, 'warning', duration);
   }
 }
 
